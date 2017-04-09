@@ -69,6 +69,14 @@ enum JsonParse {
     STANDARD, COMMENTS
 };
 
+// Options structure for pretty_print
+struct PrettyPrintOptions {
+    // Stores current indentation level
+    int current_indentation{0};
+    // How much is indentation level increased each time?
+    int indent_increment{2};
+};
+
 class JsonValue;
 
 class Json final {
@@ -155,6 +163,24 @@ public:
         return out;
     }
 
+    // Pretty serialization
+    void pretty_print(std::string &out, PrettyPrintOptions &options) const;
+    void pretty_print(std::string &out) const {
+        PrettyPrintOptions options;
+        pretty_print(out, options);
+    }
+    std::string pretty_print(PrettyPrintOptions &options) const {
+        std::string out;
+        pretty_print(out, options);
+        return out;
+    }
+    std::string pretty_print() const {
+        PrettyPrintOptions options;
+        std::string out;
+        pretty_print(out, options);
+        return out;
+    }
+
     // Parse. If parse fails, return Json() and assign an error message to err.
     static Json parse(const std::string & in,
                       std::string & err,
@@ -213,6 +239,7 @@ protected:
     virtual bool equals(const JsonValue * other) const = 0;
     virtual bool less(const JsonValue * other) const = 0;
     virtual void dump(std::string &out) const = 0;
+    virtual void pretty_print(std::string &out, PrettyPrintOptions &options) const = 0;
     virtual double number_value() const;
     virtual int int_value() const;
     virtual bool bool_value() const;

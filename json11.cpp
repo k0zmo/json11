@@ -150,6 +150,70 @@ void Json::dump(string &out) const {
     m_ptr->dump(out);
 }
 
+static void pretty_print(NullStruct value, string &out, PrettyPrintOptions&) {
+    dump(value, out);
+}
+
+static void pretty_print(double value, string &out, PrettyPrintOptions&) {
+    dump(value, out);
+}
+
+static void pretty_print(int value, string &out, PrettyPrintOptions&) {
+    dump(value, out);
+}
+
+static void pretty_print(bool value, string &out, PrettyPrintOptions&) {
+    dump(value, out);
+}
+
+static void pretty_print(const string &value, string &out, PrettyPrintOptions&) {
+    dump(value, out);
+}
+
+static void pretty_print(const Json::array &values, string &out, PrettyPrintOptions &options) {
+    options.current_indentation += options.indent_increment;
+    string indent_str(options.current_indentation, ' ');
+
+    bool first = true;
+    out += "[\n";
+    for (auto &value : values) {
+        if (!first)
+            out += ",\n";
+        out += indent_str;
+        value.pretty_print(out, options);
+        first = false;
+    }
+    out += "\n";
+    options.current_indentation -= options.indent_increment;
+    out += string(options.current_indentation, ' ');
+    out += "]";
+}
+
+static void pretty_print(const Json::object &values, string &out, PrettyPrintOptions &options) {
+    options.current_indentation += options.indent_increment;
+    string indent_str(options.current_indentation, ' ');
+
+    bool first = true;
+    out += "{\n";
+    for (const auto &kv : values) {
+        if (!first)
+            out += ",\n";
+        out += indent_str;
+        pretty_print(kv.first, out, options);
+        out += ": ";
+        kv.second.pretty_print(out, options);
+        first = false;
+    }
+    out += "\n";
+    options.current_indentation -= options.indent_increment;
+    out += string(options.current_indentation, ' ');
+    out += "}";
+}
+
+void Json::pretty_print(string &out, PrettyPrintOptions &options) const {
+    m_ptr->pretty_print(out, options);
+}
+
 /* * * * * * * * * * * * * * * * * * * *
  * Value wrappers
  */
@@ -177,6 +241,7 @@ protected:
 
     const T m_value;
     void dump(string &out) const override { json11::dump(m_value, out); }
+    void pretty_print(string &out, PrettyPrintOptions &options) const override { json11::pretty_print(m_value, out, options); }
 };
 
 class JsonDouble final : public Value<Json::NUMBER, double> {
