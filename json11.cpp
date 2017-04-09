@@ -26,6 +26,15 @@
 #include <cstdio>
 #include <limits>
 
+#if defined(_MSC_VER)
+#  define snprintf(str, size, format, ...) \
+         _snprintf_s(str, size, _TRUNCATE, format, __VA_ARGS__)
+#  if _MSC_VER <= 1800
+#    pragma push_macro("noexcept")
+#    define noexcept throw()
+#  endif
+#endif
+
 namespace json11 {
 
 static const int max_depth = 200;
@@ -782,3 +791,11 @@ bool Json::has_shape(const shape & types, string & err) const {
 }
 
 } // namespace json11
+
+#if defined(_MSC_VER)
+#  undef snprintf
+#  if _MSC_VER <= 1800
+#    undef noexcept
+#    pragma pop_macro("noexcept")
+#  endif
+#endif
