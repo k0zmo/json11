@@ -56,16 +56,11 @@
 #include <memory>
 #include <initializer_list>
 
-#ifdef _MSC_VER
-    #if _MSC_VER <= 1800 // VS 2013
-        #ifndef noexcept
-            #define noexcept throw()
-        #endif
-
-        #ifndef snprintf
-            #define snprintf _snprintf_s
-        #endif
-    #endif
+#if defined(_MSC_VER)
+#  if _MSC_VER <= 1800
+#    pragma push_macro("noexcept")
+#    define noexcept throw()
+#  endif 
 #endif
 
 namespace json11 {
@@ -230,3 +225,10 @@ protected:
 };
 
 } // namespace json11
+
+#if defined(_MSC_VER)
+#  if _MSC_VER <= 1800
+#    undef noexcept
+#    pragma pop_macro("noexcept")
+#  endif
+#endif
