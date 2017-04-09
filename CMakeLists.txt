@@ -18,7 +18,7 @@ if(MSVC)
   target_compile_options(json11 PRIVATE /W4 /WX)
 else()
   target_compile_options(json11
-    PRIVATE -fPIC -fno-rtti -fno-exceptions -Wall -Wextra -Werror)
+    PRIVATE -fno-rtti -fno-exceptions -Wall -Wextra -Werror)
 endif()
 configure_file("json11.pc.in" "json11.pc" @ONLY)
 
