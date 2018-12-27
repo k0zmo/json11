@@ -13,6 +13,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 add_library(json11 json11.cpp)
+add_library(json11::json11 ALIAS json11)
 target_include_directories(json11 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 if(MSVC)
   target_compile_options(json11 PRIVATE /W4 /WX)
